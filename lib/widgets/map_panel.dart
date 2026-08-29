@@ -78,6 +78,7 @@ class _BfpMapPanelState extends State<BfpMapPanel> {
   LatLng? _myLocation;
   bool _showLegend = false;
   bool _isLocating = false;
+  StreamSubscription<Position>? _positionStream;
 
   static const _kDefaultZoom = 12.5;
 
@@ -85,6 +86,65 @@ class _BfpMapPanelState extends State<BfpMapPanel> {
   void initState() {
     super.initState();
     _buildMarkers();
+    _startLiveLocationTracking();
+  }
+
+  @override
+  void dispose() {
+    _positionStream?.cancel();
+    super.dispose();
+  }
+
+  // ── Live "🚒 BFP Dispatcher" pin ─────────────────────────────────────────
+  //
+  // Keeps _myLocation continuously fresh from GPS — same idea as the blue
+  // dot on Google Maps — for as long as this panel is on screen, which
+  // spans both browsing the pending queue and handling an active
+  // (Acknowledged) report: _visibleReports filters which REPORT markers
+  // show, but this dispatcher's own marker is added unconditionally in
+  // _buildMarkers() regardless of that filter, so it never disappears
+  // across that transition. Distinct from _locateMe(), which additionally
+  // snaps the camera there on an explicit tap — this only moves the pin,
+  // never the camera, so it doesn't fight the dispatcher's own panning.
+  Future<void> _startLiveLocationTracking() async {
+    if (!await _ensureLocationPermission()) return;
+
+    try {
+      final pos = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      ).timeout(const Duration(seconds: 10));
+      if (!mounted) return;
+      setState(() => _myLocation = LatLng(pos.latitude, pos.longitude));
+      _buildMarkers();
+    } catch (e) {
+      debugPrint('BFP initial location fix error: $e');
+    }
+
+    _positionStream?.cancel();
+    _positionStream = Geolocator.getPositionStream(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+        // Re-fires roughly whenever the dispatcher has visibly moved,
+        // rather than on every sub-metre GPS jitter.
+        distanceFilter: 5,
+      ),
+    ).listen(
+      (pos) {
+        if (!mounted) return;
+        setState(() => _myLocation = LatLng(pos.latitude, pos.longitude));
+        _buildMarkers();
+      },
+      onError: (e) => debugPrint('BFP position stream error: $e'),
+    );
+  }
+
+  Future<bool> _ensureLocationPermission() async {
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    }
+    return permission != LocationPermission.deniedForever &&
+        permission != LocationPermission.denied;
   }
 
   @override
@@ -171,16 +231,16 @@ class _BfpMapPanelState extends State<BfpMapPanel> {
     }
   }
 
-  // ── Get device location ─────────────────────────────────────────────────────
+  // ── "Locate me" button: snaps the camera to the dispatcher's position ──────
+  //
+  // The pin itself is kept fresh continuously by _startLiveLocationTracking
+  // regardless of this button; this only handles the explicit camera jump,
+  // and doubles as a way to (re)start tracking if permission was denied
+  // when the panel first loaded and has since been granted.
   Future<void> _locateMe() async {
     setState(() => _isLocating = true);
     try {
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-      }
-      if (permission == LocationPermission.deniedForever ||
-          permission == LocationPermission.denied) {
+      if (!await _ensureLocationPermission()) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -191,6 +251,8 @@ class _BfpMapPanelState extends State<BfpMapPanel> {
         }
         return;
       }
+
+      if (_positionStream == null) _startLiveLocationTracking();
 
       final pos = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
