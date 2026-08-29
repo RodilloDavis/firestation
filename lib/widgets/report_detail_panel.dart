@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import '../models/emergency_report.dart';
 import '../core/app_colors.dart';
@@ -148,6 +149,13 @@ class ReportDetailPanel extends StatelessWidget {
                           value:
                               '${report.latitude.toStringAsFixed(6)}, ${report.longitude.toStringAsFixed(6)}',
                         ),
+                      if (report.latitude != 0 && report.longitude != 0) ...[
+                        const SizedBox(height: 10),
+                        _LocationPreviewMap(
+                          latitude: report.latitude,
+                          longitude: report.longitude,
+                        ),
+                      ],
                     ],
                   ),
                   const SizedBox(height: 12),
@@ -437,6 +445,56 @@ class _DetailRow extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// Small static map preview shown under the coordinates so a dispatcher can
+// see at a glance where a pending/active report is from, without leaving
+// the detail panel. liteModeEnabled renders it as a static bitmap — the
+// right choice inside a SingleChildScrollView, since it avoids the map's
+// own drag/zoom gestures fighting the page scroll.
+class _LocationPreviewMap extends StatelessWidget {
+  final double latitude;
+  final double longitude;
+
+  const _LocationPreviewMap({
+    required this.latitude,
+    required this.longitude,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final position = LatLng(latitude, longitude);
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        height: 160,
+        decoration: BoxDecoration(
+          border: Border.all(color: AppColors.primary.withValues(alpha: 0.15)),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: GoogleMap(
+          initialCameraPosition: CameraPosition(target: position, zoom: 16),
+          liteModeEnabled: true,
+          zoomControlsEnabled: false,
+          myLocationButtonEnabled: false,
+          mapToolbarEnabled: false,
+          scrollGesturesEnabled: false,
+          rotateGesturesEnabled: false,
+          tiltGesturesEnabled: false,
+          zoomGesturesEnabled: false,
+          markers: {
+            Marker(
+              markerId: const MarkerId('report_location'),
+              position: position,
+              icon: BitmapDescriptor.defaultMarkerWithHue(
+                BitmapDescriptor.hueRed,
+              ),
+            ),
+          },
+        ),
       ),
     );
   }
