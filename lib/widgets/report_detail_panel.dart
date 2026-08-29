@@ -26,7 +26,10 @@ class ReportDetailPanel extends StatelessWidget {
       SnackBar(
         content: Text(
           message,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         backgroundColor: AppColors.danger,
         behavior: SnackBarBehavior.floating,
@@ -154,6 +157,11 @@ class ReportDetailPanel extends StatelessWidget {
                         _LocationPreviewMap(
                           latitude: report.latitude,
                           longitude: report.longitude,
+                          label:
+                              report.address.isNotEmpty &&
+                                  report.address != 'No address provided'
+                              ? report.address
+                              : 'Brgy. ${report.barangay}, Panabo City',
                         ),
                       ],
                     ],
@@ -454,14 +462,17 @@ class _DetailRow extends StatelessWidget {
 // see at a glance where a pending/active report is from, without leaving
 // the detail panel. liteModeEnabled renders it as a static bitmap — the
 // right choice inside a SingleChildScrollView, since it avoids the map's
-// own drag/zoom gestures fighting the page scroll.
+// own drag/zoom gestures fighting the page scroll. Tapping it opens a
+// full-screen, fully interactive map centered on the same spot.
 class _LocationPreviewMap extends StatelessWidget {
   final double latitude;
   final double longitude;
+  final String label;
 
   const _LocationPreviewMap({
     required this.latitude,
     required this.longitude,
+    required this.label,
   });
 
   @override
@@ -475,26 +486,114 @@ class _LocationPreviewMap extends StatelessWidget {
           border: Border.all(color: AppColors.primary.withValues(alpha: 0.15)),
           borderRadius: BorderRadius.circular(10),
         ),
-        child: GoogleMap(
-          initialCameraPosition: CameraPosition(target: position, zoom: 16),
-          liteModeEnabled: true,
-          zoomControlsEnabled: false,
-          myLocationButtonEnabled: false,
-          mapToolbarEnabled: false,
-          scrollGesturesEnabled: false,
-          rotateGesturesEnabled: false,
-          tiltGesturesEnabled: false,
-          zoomGesturesEnabled: false,
-          markers: {
-            Marker(
-              markerId: const MarkerId('report_location'),
-              position: position,
-              icon: BitmapDescriptor.defaultMarkerWithHue(
-                BitmapDescriptor.hueRed,
+        child: Stack(
+          children: [
+            // liteMode's own native view has a built-in tap handler (it
+            // tries to hand the tap off to the Google Maps app) that
+            // otherwise wins the touch before Flutter's GestureDetector
+            // ever sees it — AbsorbPointer blocks that so our tap layer on
+            // top gets it instead.
+            AbsorbPointer(
+              child: GoogleMap(
+                initialCameraPosition: CameraPosition(
+                  target: position,
+                  zoom: 16,
+                ),
+                liteModeEnabled: true,
+                zoomControlsEnabled: false,
+                myLocationButtonEnabled: false,
+                mapToolbarEnabled: false,
+                scrollGesturesEnabled: false,
+                rotateGesturesEnabled: false,
+                tiltGesturesEnabled: false,
+                zoomGesturesEnabled: false,
+                markers: {
+                  Marker(
+                    markerId: const MarkerId('report_location'),
+                    position: position,
+                    icon: BitmapDescriptor.defaultMarkerWithHue(
+                      BitmapDescriptor.hueRed,
+                    ),
+                  ),
+                },
               ),
             ),
-          },
+            Positioned.fill(
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          _FullLocationMap(position: position, label: label),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            // Affordance so a static-looking preview still reads as
+            // tappable — liteMode has no built-in hint that it opens up.
+            Positioned(
+              right: 8,
+              bottom: 8,
+              child: Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.15),
+                      blurRadius: 4,
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.fullscreen,
+                  size: 16,
+                  color: AppColors.primary,
+                ),
+              ),
+            ),
+          ],
         ),
+      ),
+    );
+  }
+}
+
+// Full-screen, pannable/zoomable map opened by tapping the preview above.
+class _FullLocationMap extends StatelessWidget {
+  final LatLng position;
+  final String label;
+
+  const _FullLocationMap({required this.position, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
+        title: Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(fontSize: 15),
+        ),
+      ),
+      body: GoogleMap(
+        initialCameraPosition: CameraPosition(target: position, zoom: 17),
+        myLocationButtonEnabled: false,
+        markers: {
+          Marker(
+            markerId: const MarkerId('report_location'),
+            position: position,
+            icon: BitmapDescriptor.defaultMarkerWithHue(
+              BitmapDescriptor.hueRed,
+            ),
+          ),
+        },
       ),
     );
   }
