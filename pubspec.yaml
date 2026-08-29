@@ -1,0 +1,29 @@
+name: firestation
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.11.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  firebase_core: ^4.5.0
+  firebase_messaging: ^16.1.2
+  flutter_local_notifications: ^21.0.0
+  http: ^1.2.2
+  shared_preferences: ^2.3.2
+  intl: ^0.20.2
+  google_maps_flutter: ^2.9.0
+  geolocator: ^13.0.2
+  url_launcher: ^6.3.1
+  firebase_database: ^12.4.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
