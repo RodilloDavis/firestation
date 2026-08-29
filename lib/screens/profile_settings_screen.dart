@@ -146,7 +146,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.07),
+                    color: Colors.black.withValues(alpha: 0.07),
                     blurRadius: 20,
                     offset: const Offset(0, 6),
                   ),
@@ -363,7 +363,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
                           disabledBackgroundColor: AppColors.primary
-                              .withOpacity(0.5),
+                              .withValues(alpha: 0.5),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),

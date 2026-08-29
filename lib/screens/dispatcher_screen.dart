@@ -302,7 +302,7 @@ class _DispatcherScreenState extends State<DispatcherScreen> {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
+            color: Colors.black.withValues(alpha: 0.15),
             blurRadius: 16,
             offset: const Offset(0, -4),
           ),
@@ -367,10 +367,10 @@ class _DispatcherScreenState extends State<DispatcherScreen> {
                     vertical: 3,
                   ),
                   decoration: BoxDecoration(
-                    color: report.statusColor.withOpacity(0.15),
+                    color: report.statusColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: report.statusColor.withOpacity(0.4),
+                      color: report.statusColor.withValues(alpha: 0.4),
                     ),
                   ),
                   child: Text(
@@ -682,7 +682,7 @@ class _DispatcherScreenState extends State<DispatcherScreen> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.15),
+              color: Colors.white.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(10),
             ),
             child: const Icon(
@@ -825,7 +825,7 @@ class _DispatcherScreenState extends State<DispatcherScreen> {
             Icon(
               Icons.local_fire_department_outlined,
               size: 56,
-              color: AppColors.primary.withOpacity(0.3),
+              color: AppColors.primary.withValues(alpha: 0.3),
             ),
             const SizedBox(height: 12),
             const Text(
@@ -920,9 +920,9 @@ class _StatChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

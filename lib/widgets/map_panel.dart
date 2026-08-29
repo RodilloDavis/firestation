@@ -345,7 +345,7 @@ class _MapStatusBanner extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -388,7 +388,7 @@ class _SelectedReportChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.4),
+            color: AppColors.primary.withValues(alpha: 0.4),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -414,7 +414,7 @@ class _SelectedReportChip extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.22),
+              color: Colors.white.withValues(alpha: 0.22),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Text(
@@ -456,7 +456,7 @@ class _MapButton extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(8),
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 6),
+            BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 6),
           ],
           border: Border.all(color: const Color(0xFFE8EDF5)),
         ),
@@ -484,7 +484,7 @@ class _MapLegend extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.09), blurRadius: 8),
+          BoxShadow(color: Colors.black.withValues(alpha: 0.09), blurRadius: 8),
         ],
         border: Border.all(color: const Color(0xFFE8EDF5)),
       ),
@@ -577,7 +577,7 @@ class _StatsBar extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.09),
+            color: Colors.black.withValues(alpha: 0.09),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),

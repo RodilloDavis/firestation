@@ -30,21 +30,21 @@ class ReportCard extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColors.primary.withOpacity(0.07)
+              ? AppColors.primary.withValues(alpha: 0.07)
               : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected
                 ? AppColors.primary
                 : (report.status == 'Pending'
-                      ? AppColors.pending.withOpacity(0.4)
-                      : report.statusColor.withOpacity(0.3)),
+                      ? AppColors.pending.withValues(alpha: 0.4)
+                      : report.statusColor.withValues(alpha: 0.3)),
             width: isSelected ? 2 : 1,
           ),
           boxShadow: [
             BoxShadow(
               color: (isSelected ? AppColors.primary : Colors.black)
-                  .withOpacity(0.06),
+                  .withValues(alpha: 0.06),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -57,7 +57,7 @@ class ReportCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
+                color: AppColors.primary.withValues(alpha: 0.1),
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(11),
                 ),
@@ -97,10 +97,10 @@ class ReportCard extends StatelessWidget {
                           vertical: 3,
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.accent.withOpacity(0.12),
+                          color: AppColors.accent.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(6),
                           border: Border.all(
-                            color: AppColors.accent.withOpacity(0.3),
+                            color: AppColors.accent.withValues(alpha: 0.3),
                           ),
                         ),
                         child: Text(
@@ -139,7 +139,7 @@ class ReportCard extends StatelessWidget {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: AppColors.danger.withOpacity(0.1),
+                            color: AppColors.danger.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
@@ -252,7 +252,7 @@ class ReportCard extends StatelessWidget {
                             : report.reportId,
                         style: TextStyle(
                           fontSize: 10,
-                          color: AppColors.grey.withOpacity(0.7),
+                          color: AppColors.grey.withValues(alpha: 0.7),
                           fontFamily: 'monospace',
                         ),
                       ),
@@ -359,9 +359,9 @@ class _StatusChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.15),
+        color: color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withOpacity(0.4)),
+        border: Border.all(color: color.withValues(alpha: 0.4)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -407,9 +407,9 @@ class _ActionButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 7),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: color.withOpacity(0.3)),
+          border: Border.all(color: color.withValues(alpha: 0.3)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
